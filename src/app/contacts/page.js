@@ -1,0 +1,295 @@
+"use client";
+
+
+import React, { useState, useEffect } from "react";
+import { FaHome, FaTelegram,FaSms  } from 'react-icons/fa'; // FaTelegram is the icon for Telegram
+import { Facebook, Instagram, Phone, Mail, MessageCircle } from 'lucide-react'; // Use MessageCircle instead of Viber
+import Sidenav from '../components/sidenav';
+import { motion, AnimatePresence } from "framer-motion";
+
+
+const Page = () => {
+    const [time, setTime] = useState(new Date());
+    const [customTime, setCustomTime] = useState("");
+    const [isDay, setIsDay] = useState(false);
+    const [position, setPosition] = useState({ x: 0, y: 0 });
+    const [showInput, setShowInput] = useState(false);
+    const [resetTimeout, setResetTimeout] = useState(null);
+    const [greeting, setGreeting] = useState(""); 
+    const [isOpen, setIsOpen] = useState(false);
+
+    const handleOpen = () => {
+      setIsOpen(true);
+    };
+    
+
+    const [formData, setFormData] = useState({
+      name: "",
+      number: "",
+      subject: "",
+      message: "",
+    });
+  
+    // Handle input change
+    const handleChange = (e) => {
+      setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+  
+    // Handle send message
+    const handleSend = () => {
+      console.log("Sending Message:", formData);
+      setTimeout(() => setIsOpen(false), 1000); // Add a delay before closing
+    };
+    
+
+    useEffect(() => {
+      console.log("Modal state changed:", isOpen);
+    }, [isOpen]);
+    
+  
+
+
+     useEffect(() => {
+        const updateTime = () => {
+          const now = customTime
+            ? new Date(`2024-01-01T${customTime}:00`)
+            : new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" });
+          const currentTime = new Date(now);
+          setTime(currentTime);
+    
+          const hour = currentTime.getHours();
+          setIsDay(hour >= 6 && hour < 18);
+    
+          const progress = (hour % 24) / 24;
+          const xPos = -40 + progress * 80;
+          const yPos = Math.sin(progress * Math.PI) * -30;
+          setPosition({ x: `${xPos}vw`, y: `${yPos}vh` });
+    
+          // Set greeting based on the time of day
+          if (hour >= 6 && hour < 12) {
+            setGreeting("Good Morning");
+          } else if (hour >= 12 && hour < 18) {
+            setGreeting("Good Afternoon");
+          } else {
+            setGreeting("Good Evening");
+          }
+        };
+    
+        updateTime();
+        const interval = setInterval(updateTime, 1000);
+        return () => clearInterval(interval);
+      }, [customTime]);
+    
+      const handleTimeChange = (e) => {
+        setCustomTime(e.target.value);
+        if (resetTimeout) clearTimeout(resetTimeout);
+        setResetTimeout(setTimeout(() => setCustomTime(""), 20000));
+      };
+  return (
+    <div
+    className={`flex flex-col items-center justify-center h-screen relative overflow-hidden transition-colors duration-1000 ${
+      isDay ? "bg-blue-300" : "bg-gray-900"
+    }`}
+  >
+      <p className="text-center text-xl font-bold mt-10"></p>
+      <Sidenav />
+
+     
+
+      {/* Social Icons */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-10 mt-10 z-50">
+        {/* Facebook */}
+        <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="text-center flex flex-col items-center">
+          <Facebook className="w-16 h-16 text-blue-600 mb-2" />
+          <span className="text-sm">Facebook</span>
+          <div className="text-xs text-gray-500 mt-1">JohnDoe123</div> {/* Account name or number */}
+        </a>
+
+        {/* Instagram */}
+        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-center flex flex-col items-center">
+          <Instagram className="w-16 h-16 text-pink-600 mb-2" />
+          <span className="text-sm">Instagram</span>
+          <div className="text-xs text-gray-500 mt-1">@johndoe_ig</div> {/* Account name or number */}
+        </a>
+
+        {/* Telegram Icon (from react-icons) */}
+        <a href="https://telegram.org" target="_blank" rel="noopener noreferrer" className="text-center flex flex-col items-center">
+          <FaTelegram className="w-16 h-16 text-blue-500 mb-2" />
+          <span className="text-sm">Telegram</span>
+          <div className="text-xs text-gray-500 mt-1">+1234567890</div> {/* Phone number */}
+        </a>
+
+        {/* Viber Fallback (MessageCircle) */}
+        <a href="https://viber.com" target="_blank" rel="noopener noreferrer" className="text-center flex flex-col items-center">
+          <MessageCircle className="w-16 h-16 text-purple-600 mb-2" />
+          <span className="text-sm">Viber</span>
+          <div className="text-xs text-gray-500 mt-1">+1234567890</div> {/* Phone number */}
+        </a>
+
+        {/* Email */}
+        <a href="mailto:example@example.com" className="text-center flex flex-col items-center">
+          <Mail className="w-16 h-16 text-gray-700 mb-2" />
+          <span className="text-sm">Email</span>
+          <div className="text-xs text-gray-500 mt-1">example@example.com</div> {/* Email address */}
+        </a>
+
+        {/* Phone */}
+        <a href="tel:+1234567890" className="text-center flex flex-col items-center">
+          <Phone className="w-16 h-16 text-green-600 mb-2" />
+          <span className="text-sm">Phone</span>
+          <div className="text-xs text-gray-500 mt-1">+123-456-7890</div> {/* Phone number */}
+        </a>
+      </div>
+
+
+
+       {/* 🔹 SMS Button */}
+       <div
+  className="absolute top-4 right-4 flex items-center gap-2 bg-white p-2 rounded-lg shadow-md cursor-pointer hover:bg-gray-200 transition z-100"
+  onClick={handleOpen}
+>
+  <FaSms className="text-blue-500 w-6 h-6" />
+  <span className="text-black text-sm font-semibold">Message me Now!</span>
+</div>
+
+      {/* 🔹 Modal */}
+      {isOpen && (
+       <div className="fixed inset-0 flex items-center justify-center bg-transparent backdrop-blur-md text-black z-90">
+
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+            <h2 className="text-lg font-semibold text-center mb-4">Send a Message</h2>
+
+            {/* Name Input */}
+            <input
+              type="text"
+              name="name"
+              placeholder="Your Name"
+              value={formData.name}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded mb-2"
+            />
+
+            {/* Number Input */}
+            <input
+              type="text"
+              name="number"
+              placeholder="Your Number"
+              value={formData.number}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded mb-2"
+            />
+
+            {/* Subject Input */}
+            <input
+              type="text"
+              name="subject"
+              placeholder="Subject"
+              value={formData.subject}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded mb-2"
+            />
+
+            {/* Message Input */}
+            <textarea
+              name="message"
+              placeholder="Your Message"
+              value={formData.message}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded mb-2 h-24"
+            ></textarea>
+
+            {/* Buttons */}
+            <div className="flex justify-between mt-4">
+              <button
+                onClick={() => setIsOpen(false)}
+                className="px-4 py-2 bg-gray-500 text-white rounded"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSend}
+                className="px-4 py-2 bg-blue-500 text-white rounded"
+              >
+                Send
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+
+
+
+      
+      
+            {/* Background animations */}
+            {!isDay && (
+              <div className="absolute inset-0 overflow-hidden">
+                {[...Array(50)].map((_, index) => (
+                  <motion.div
+                    key={index}
+                    className="absolute bg-white rounded-full"
+                    style={{
+                      width: `${Math.random() * 3}px`,
+                      height: `${Math.random() * 3}px`,
+                      top: `${Math.random() * 100}vh`,
+                      left: `${Math.random() * 100}vw`,
+                      opacity: Math.random(),
+                    }}
+                    animate={{ opacity: [0, 1, 0] }}
+                    transition={{ duration: Math.random() * 5 + 2, repeat: Infinity }}
+                  />
+                ))}
+              </div>
+            )}
+      
+            {isDay && (
+              <div className="absolute inset-0 overflow-hidden">
+                {[...Array(10)].map((_, index) => (
+                  <motion.div
+                    key={index}
+                    className="absolute bg-blue-200 opacity-70 rounded-full"
+                    style={{
+                      width: `${30 + Math.random() * 50}px`,
+                      height: `${20 + Math.random() * 30}px`,
+                      top: `${Math.random() * 40}vh`,
+                      left: `${Math.random() * 100}vw`,
+                    }}
+                    animate={{ x: ["-100vw", "100vw"] }}
+                    transition={{ duration: 50, repeat: Infinity, ease: "linear" }}
+                  />
+                ))}
+              </div>
+            )}
+      
+            {/* Time input */}
+            {showInput && (
+              <div className="absolute top-10 flex flex-col items-center">
+                <label className="text-white mb-2">Set Time:</label>
+                <input
+                  type="time"
+                  className="p-2 rounded bg-white text-black shadow-lg"
+                  onChange={handleTimeChange}
+                />
+              </div>
+            )}
+      
+            <motion.div
+              className={`w-16 h-16 rounded-full absolute cursor-pointer ${
+                isDay
+                  ? "bg-gradient-to-r from-yellow-500 to-white shadow-[0_0_40px_15px_rgba(255,255,255,0.8)]"
+                  : "bg-gray-200 shadow-[0_0_30px_10px_rgba(255,255,255,0.5)]"
+              }`}
+              animate={{ x: position.x, y: position.y }}
+              transition={{ duration: 2, ease: "easeInOut" }}
+              onClick={() => setShowInput(!showInput)}
+            />
+      
+            <div className="absolute bottom-4 right-4 text-white text-2xl font-bold">
+              {time.toLocaleTimeString("en-US", { timeZone: "Asia/Manila" })}
+            </div>
+    </div>
+  );
+};
+
+export default Page;
