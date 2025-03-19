@@ -48,7 +48,7 @@ const Sidenav = () => {
 
      {/* Sidenav for Desktop */}
 <div
-  className={`absolute top-0 left-0 z-0 w-64 h-full ${
+  className={`absolute top-0 left-0 z-0 w-64 h-full z-100 ${
     menuOpen ? "block bg-[rgba(0,0,0,0.8)]" : "hidden"
   } md:block`}
 >

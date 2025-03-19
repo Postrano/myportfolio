@@ -99,45 +99,45 @@ const Page = () => {
       {/* Social Icons */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-10 mt-10 z-50">
         {/* Facebook */}
-        <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="text-center flex flex-col items-center">
+        <a href="https://www.facebook.com/dhon.e.p" target="_blank" rel="noopener noreferrer" className="text-center flex flex-col items-center">
           <Facebook className="w-16 h-16 text-blue-600 mb-2" />
           <span className="text-sm">Facebook</span>
-          <div className="text-xs text-gray-500 mt-1">JohnDoe123</div> {/* Account name or number */}
+          <div className="text-xs text-gray-500 mt-1">Denmark Esclamado Postrano</div> {/* Account name or number */}
         </a>
 
         {/* Instagram */}
-        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-center flex flex-col items-center">
+        <a href="https://www.instagram.com/dhon.e.p/" target="_blank" rel="noopener noreferrer" className="text-center flex flex-col items-center">
           <Instagram className="w-16 h-16 text-pink-600 mb-2" />
           <span className="text-sm">Instagram</span>
-          <div className="text-xs text-gray-500 mt-1">@johndoe_ig</div> {/* Account name or number */}
+          <div className="text-xs text-gray-500 mt-1">@dhon.e.p</div> {/* Account name or number */}
         </a>
 
         {/* Telegram Icon (from react-icons) */}
-        <a href="https://telegram.org" target="_blank" rel="noopener noreferrer" className="text-center flex flex-col items-center">
+        <a href="09557204955" target="_blank" rel="noopener noreferrer" className="text-center flex flex-col items-center">
           <FaTelegram className="w-16 h-16 text-blue-500 mb-2" />
           <span className="text-sm">Telegram</span>
-          <div className="text-xs text-gray-500 mt-1">+1234567890</div> {/* Phone number */}
+          <div className="text-xs text-gray-500 mt-1">denmarkpostrano</div> {/* Phone number */}
         </a>
 
         {/* Viber Fallback (MessageCircle) */}
-        <a href="https://viber.com" target="_blank" rel="noopener noreferrer" className="text-center flex flex-col items-center">
+        <a href="09557204955" target="_blank" rel="noopener noreferrer" className="text-center flex flex-col items-center">
           <MessageCircle className="w-16 h-16 text-purple-600 mb-2" />
           <span className="text-sm">Viber</span>
-          <div className="text-xs text-gray-500 mt-1">+1234567890</div> {/* Phone number */}
+          <div className="text-xs text-gray-500 mt-1">denmarkpostrano</div> {/* Phone number */}
         </a>
 
         {/* Email */}
-        <a href="mailto:example@example.com" className="text-center flex flex-col items-center">
+        <a href="denmarkpostrano@gmail.com.com" className="text-center flex flex-col items-center">
           <Mail className="w-16 h-16 text-gray-700 mb-2" />
           <span className="text-sm">Email</span>
-          <div className="text-xs text-gray-500 mt-1">example@example.com</div> {/* Email address */}
+          <div className="text-xs text-gray-500 mt-1">denmarkpostrano@gmail.com</div> {/* Email address */}
         </a>
 
         {/* Phone */}
         <a href="tel:+1234567890" className="text-center flex flex-col items-center">
           <Phone className="w-16 h-16 text-green-600 mb-2" />
           <span className="text-sm">Phone</span>
-          <div className="text-xs text-gray-500 mt-1">+123-456-7890</div> {/* Phone number */}
+          <div className="text-xs text-gray-500 mt-1">None</div> {/* Phone number */}
         </a>
       </div>
 
