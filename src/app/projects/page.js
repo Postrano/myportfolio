@@ -5,6 +5,7 @@
 import React, { useState, useEffect } from "react";
 import Sidenav from '../components/sidenav';
 import { motion, AnimatePresence } from "framer-motion";
+import ProjectShowcase from "../components/projects";
 
 const page = () => {
    const [time, setTime] = useState(new Date());
@@ -52,14 +53,11 @@ const page = () => {
               setResetTimeout(setTimeout(() => setCustomTime(""), 20000));
             };
   return (
-    <div
-    className={`flex flex-col items-center justify-center h-screen relative overflow-hidden transition-colors duration-1000 ${
-      isDay ? "bg-blue-300" : "bg-gray-900"
-    }`}
-  >
+    <div>
+  
 
       {/* Title */}
-      <p className="text-center mt-12 text-2xl font-bold">Projects</p>
+      {/* <p className="text-center mt-12 text-2xl font-bold">Projects</p> */}
 
      <Sidenav/>
 
@@ -89,11 +87,8 @@ const page = () => {
       </div> */}
 
 
-
-
-      
             {/* Background animations */}
-            {!isDay && (
+            {/* {!isDay && (
               <div className="absolute inset-0 overflow-hidden">
                 {[...Array(50)].map((_, index) => (
                   <motion.div
@@ -111,9 +106,9 @@ const page = () => {
                   />
                 ))}
               </div>
-            )}
+            )} */}
       
-            {isDay && (
+            {/* {isDay && (
               <div className="absolute inset-0 overflow-hidden">
                 {[...Array(10)].map((_, index) => (
                   <motion.div
@@ -131,9 +126,9 @@ const page = () => {
                 ))}
               </div>
             )}
-      
+       */}
             {/* Time input */}
-            {showInput && (
+            {/* {showInput && (
               <div className="absolute top-10 flex flex-col items-center">
                 <label className="text-white mb-2">Set Time:</label>
                 <input
@@ -143,8 +138,8 @@ const page = () => {
                 />
               </div>
             )}
-      
-            <motion.div
+       */}
+            {/* <motion.div
               className={`w-16 h-16 rounded-full absolute cursor-pointer ${
                 isDay
                   ? "bg-gradient-to-r from-yellow-500 to-white shadow-[0_0_40px_15px_rgba(255,255,255,0.8)]"
@@ -154,11 +149,15 @@ const page = () => {
               transition={{ duration: 2, ease: "easeInOut" }}
               onClick={() => setShowInput(!showInput)}
             />
-      
-            <div className="absolute bottom-4 right-4 text-white text-2xl font-bold">
+       */}
+            {/* <div className="absolute bottom-4 right-4 text-white text-2xl font-bold">
               {time.toLocaleTimeString("en-US", { timeZone: "Asia/Manila" })}
-            </div>
+            </div> */}
 
+           
+
+  
+    <ProjectShowcase/>
     </div>
   );
 }

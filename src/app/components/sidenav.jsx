@@ -73,12 +73,12 @@ const Sidenav = () => {
     </a>
   </div>
 
-  <div className="absolute top-62 left-5 text-4xl cursor-pointer flex items-center text-white">
+  {/* <div className="absolute top-62 left-5 text-4xl cursor-pointer flex items-center text-white">
     <a href="/educations" className="flex items-center hover:text-[#FFD700] transition-colors duration-300">
       <GiGraduateCap className="mr-2" />
       <span className="text-sm">Education</span>
     </a>
-  </div>
+  </div> */}
 </div>
 
 

@@ -90,12 +90,12 @@ const Introduction = () => {
       </a>
     </div>
 
-    <div className={`absolute top-62 left-5 text-4xl cursor-pointer z-50 flex items-center  hover:text-[#FFD700] transition-colors duration-300 ${isDay ? "text-[#191970]" : "text-white"}`}>
+    {/* <div className={`absolute top-62 left-5 text-4xl cursor-pointer z-50 flex items-center  hover:text-[#FFD700] transition-colors duration-300 ${isDay ? "text-[#191970]" : "text-white"}`}>
       <a href="/educations" className="flex items-center">
         <GiGraduateCap className="mr-2" />
         <span className="text-sm">Education</span>
       </a>
-    </div>
+    </div> */}
 
     <div className="z-50 w-full absolute bottom-20 left-5 p-4 rounded-lg shadow-lg max-w-xs sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl">
       <h1 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold mb-3 animate-type ${isDay ? "text-[#191970]" : "text-white"}`}>
@@ -200,10 +200,10 @@ const Introduction = () => {
         {time.toLocaleTimeString("en-US", { timeZone: "Asia/Manila" })}
       </div>
 
-      <div className="absolute top-4 right-4 text-white text-2xl font-bold">
-        <p>{greeting}!</p>
-        <p className="text-sm ml-30">-denmark</p>
-      </div>
+    <div className="absolute top-4 right-4  p-4 rounded-xl  text-white">
+  <p className="text-2xl font-bold">{greeting}!</p>
+  <p className="text-sm text-left italic">— Denmark</p>
+</div>
 
       {/* Animated ID Card & Lanyard */}
       <AnimatePresence>
