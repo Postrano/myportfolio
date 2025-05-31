@@ -2,10 +2,11 @@
 
 
 import React, { useState, useEffect } from "react";
-import { FaHome, FaTelegram,FaSms  } from 'react-icons/fa'; // FaTelegram is the icon for Telegram
+import { FaHome, FaTelegram,FaSms, FaVoicemail, FaMailBulk  } from 'react-icons/fa'; // FaTelegram is the icon for Telegram
 import { Facebook, Instagram, Phone, Mail, MessageCircle } from 'lucide-react'; // Use MessageCircle instead of Viber
 import Sidenav from '../components/sidenav';
 import { motion, AnimatePresence } from "framer-motion";
+import emailjs from 'emailjs-com';
 
 
 const Page = () => {
@@ -16,31 +17,22 @@ const Page = () => {
     const [showInput, setShowInput] = useState(false);
     const [resetTimeout, setResetTimeout] = useState(null);
     const [greeting, setGreeting] = useState(""); 
-    const [isOpen, setIsOpen] = useState(false);
+      const [isOpen, setIsOpen] = useState(false); // ✅ declare this early
+      const [sendSuccess, setSendSuccess] = useState(false);
 
-    const handleOpen = () => {
-      setIsOpen(true);
-    };
-    
+   
 
-    const [formData, setFormData] = useState({
-      name: "",
-      number: "",
-      subject: "",
-      message: "",
-    });
-  
-    // Handle input change
-    const handleChange = (e) => {
-      setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
-  
-    // Handle send message
-    const handleSend = () => {
-      console.log("Sending Message:", formData);
-      setTimeout(() => setIsOpen(false), 1000); // Add a delay before closing
-    };
-    
+      useEffect(() => {
+  if (sendSuccess) {
+    const timer = setTimeout(() => {
+      setSendSuccess(false);
+      setIsOpen(false); // close modal if needed
+    }, 10000); // 10 seconds
+
+    return () => clearTimeout(timer); // cleanup
+  }
+}, [sendSuccess]);
+
 
     useEffect(() => {
       console.log("Modal state changed:", isOpen);
@@ -85,6 +77,48 @@ const Page = () => {
         if (resetTimeout) clearTimeout(resetTimeout);
         setResetTimeout(setTimeout(() => setCustomTime(""), 20000));
       };
+
+
+ 
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    number: '',
+    subject: '',
+    message: '',
+  });
+
+  const handleOpen = () => setIsOpen(true);
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSend = () => {
+const templateParams = {
+  name: formData.name,
+  email: formData.email,
+  number: formData.number,
+  subject: formData.subject,
+  message: formData.message,
+};
+
+
+
+  emailjs
+     .send('service_ow105uz', 'template_ms1ekgh', templateParams, '7ngof_LvMBjUNBQ1A')
+    .then(() => {
+      setSendSuccess(true);       // Show success message
+      // Optionally clear form or keep it
+      setFormData({ name: '', email: '', number: '', subject: '', message: '' });
+    })
+    .catch((error) => {
+      console.error('EmailJS Error:', error?.text || error);
+      alert('Failed to send message. Please try again.');
+    });
+};
+
+
+  
   return (
     <div
     className={`flex flex-col items-center justify-center h-screen relative overflow-hidden transition-colors duration-1000 ${
@@ -116,14 +150,14 @@ const Page = () => {
         <a href="09557204955" target="_blank" rel="noopener noreferrer" className="text-center flex flex-col items-center">
           <FaTelegram className="w-16 h-16 text-blue-500 mb-2" />
           <span className="text-sm">Telegram</span>
-          <div className="text-xs text-gray-500 mt-1">denmarkpostrano</div> {/* Phone number */}
+          <div className="text-xs text-gray-500 mt-1">09557204955 </div> {/* Phone number */}
         </a>
 
         {/* Viber Fallback (MessageCircle) */}
         <a href="09557204955" target="_blank" rel="noopener noreferrer" className="text-center flex flex-col items-center">
           <MessageCircle className="w-16 h-16 text-purple-600 mb-2" />
           <span className="text-sm">Viber</span>
-          <div className="text-xs text-gray-500 mt-1">denmarkpostrano</div> {/* Phone number */}
+          <div className="text-xs text-gray-500 mt-1">09557204955 </div> {/* Phone number */}
         </a>
 
         {/* Email */}
@@ -148,75 +182,82 @@ const Page = () => {
   className="absolute top-4 right-4 flex items-center gap-2 bg-white p-2 rounded-lg shadow-md cursor-pointer hover:bg-gray-200 transition z-100"
   onClick={handleOpen}
 >
-  <FaSms className="text-blue-500 w-6 h-6" />
+  <FaMailBulk
+   className="text-blue-500 w-6 h-6" />
   <span className="text-black text-sm font-semibold">Message me Now!</span>
 </div>
 
       {/* 🔹 Modal */}
-      {isOpen && (
-       <div className="fixed inset-0 flex items-center justify-center bg-transparent backdrop-blur-md text-black z-90">
+   {isOpen && (
+  <div className="fixed inset-0 flex items-center justify-center bg-transparent backdrop-blur-md text-black z-90">
+    <div className="bg-white p-6 rounded-lg shadow-lg w-96">
 
-          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-            <h2 className="text-lg font-semibold text-center mb-4">Send a Message</h2>
+      <h2 className="text-lg font-semibold text-center mb-4">Send a Message</h2>
 
-            {/* Name Input */}
-            <input
-              type="text"
-              name="name"
-              placeholder="Your Name"
-              value={formData.name}
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded mb-2"
-            />
+      <input
+        type="text"
+        name="name"
+        placeholder="Your Name"
+        value={formData.name}
+        onChange={handleChange}
+        className="w-full p-2 border border-gray-300 rounded mb-2"
+      />
+      <input
+        type="email"
+        name="email"
+        placeholder="Your Email"
+        value={formData.email}
+        onChange={handleChange}
+        className="w-full p-2 border border-gray-300 rounded mb-2"
+      />
+      <input
+        type="text"
+        name="number"
+        placeholder="Your Number"
+        value={formData.number}
+        onChange={handleChange}
+        className="w-full p-2 border border-gray-300 rounded mb-2"
+      />
+      <input
+        type="text"
+        name="subject"
+        placeholder="Subject"
+        value={formData.subject}
+        onChange={handleChange}
+        className="w-full p-2 border border-gray-300 rounded mb-2"
+      />
+      <textarea
+        name="message"
+        placeholder="Your Message"
+        value={formData.message}
+        onChange={handleChange}
+        className="w-full p-2 border border-gray-300 rounded mb-2 h-24"
+      ></textarea>
 
-            {/* Number Input */}
-            <input
-              type="text"
-              name="number"
-              placeholder="Your Number"
-              value={formData.number}
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded mb-2"
-            />
+      <div className="flex justify-between mt-4">
+        <button
+          onClick={() => setIsOpen(false)}
+          className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-red-600"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={handleSend}
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 "
+        >
+          Send
+        </button>
+      </div>
 
-            {/* Subject Input */}
-            <input
-              type="text"
-              name="subject"
-              placeholder="Subject"
-              value={formData.subject}
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded mb-2"
-            />
-
-            {/* Message Input */}
-            <textarea
-              name="message"
-              placeholder="Your Message"
-              value={formData.message}
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded mb-2 h-24"
-            ></textarea>
-
-            {/* Buttons */}
-            <div className="flex justify-between mt-4">
-              <button
-                onClick={() => setIsOpen(false)}
-                className="px-4 py-2 bg-gray-500 text-white rounded"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSend}
-                className="px-4 py-2 bg-blue-500 text-white rounded"
-              >
-                Send
-              </button>
-            </div>
-          </div>
-        </div>
+      {/* ✅ Conditional Success Message */}
+      {sendSuccess && (
+        <p className="text-green-600 font-semibold text-lg mb-4 text-center mt-7">
+          Message sent successfully!
+        </p>
       )}
-
+    </div>
+  </div>
+)}
 
 
 
