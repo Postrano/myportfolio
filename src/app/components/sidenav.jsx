@@ -4,7 +4,7 @@ import { FaIdBadge } from "react-icons/fa";
 import { IoMdContacts } from "react-icons/io";
 import { AiOutlineProject } from "react-icons/ai";
 import { GiGraduateCap } from "react-icons/gi";
-import { FaHome } from "react-icons/fa";
+import { FaHome, FaTools } from "react-icons/fa";
 
 const Sidenav = () => {
   const [active, setActive] = useState(1); // Track the active link
@@ -70,6 +70,13 @@ const Sidenav = () => {
     <a href="/projects" className="flex items-center hover:text-[#FFD700] transition-colors duration-300">
       <AiOutlineProject className="mr-2" />
       <span className="text-sm">Projects</span>
+    </a>
+  </div>
+
+  <div className="absolute top-62 left-5 text-4xl cursor-pointer flex items-center text-white">
+    <a href="/tools" className="flex items-center hover:text-[#FFD700] transition-colors duration-300">
+      <FaTools className="mr-2" />
+      <span className="text-sm">Tools</span>
     </a>
   </div>
 
