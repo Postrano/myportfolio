@@ -2,6 +2,9 @@
 
 import React, { useMemo, useRef, useState } from "react";
 import Sidenav from "../components/sidenav";
+import UploadBar from "./UploadBar";
+import EmptyState from "./EmptyState";
+import FileTable from "./FileTable";
 
 export default function CompressorPage() {
   const [items, setItems] = useState([]); // [{ file, status, beforeSize, afterSize, outputBlob, outputName, error }]
@@ -190,99 +193,27 @@ export default function CompressorPage() {
           onDragEnter={preventDefault}
           onDragLeave={preventDefault}
         >
-          <div className="flex flex-wrap items-center gap-3 mb-4">
-            <label htmlFor="filePicker" className={`px-4 py-2 rounded bg-indigo-600 hover:bg-indigo-500 ${busy ? 'opacity-60 pointer-events-none' : 'cursor-pointer'}`}>
-              Choose files
-            </label>
-            <input
-              id="filePicker"
-              ref={fileInputRef}
-              type="file"
-              multiple
-              className="hidden"
-              accept="application/pdf,application/*,image/*,text/*,*/*"
-              onChange={handleFiles}
-            />
-            <div className="ml-auto flex items-center gap-5">
-              <div className="flex items-center gap-2 text-sm text-white/80">
-                <label htmlFor="jpegQuality">Image quality</label>
-                <input
-                  id="jpegQuality"
-                  type="range"
-                  min="0.3"
-                  max="0.95"
-                  step="0.05"
-                  value={jpegQuality}
-                  onChange={(e) => setJpegQuality(parseFloat(e.target.value))}
-                  disabled={busy}
-                />
-                <span className="text-xs tabular-nums">{Math.round(jpegQuality * 100)}%</span>
-              </div>
-            </div>
-          </div>
+          <UploadBar
+            busy={busy}
+            onPick={() => {}}
+            inputId="filePicker"
+            fileInputRef={fileInputRef}
+            onFiles={handleFiles}
+            jpegQuality={jpegQuality}
+            setJpegQuality={setJpegQuality}
+          />
 
-          {items.length === 0 && (
-            <div className="text-center text-white/60 py-10">
-              <div className="mx-auto w-12 h-12 rounded-full border border-dashed border-white/20 flex items-center justify-center mb-3">
-                <span className="text-xl">+</span>
-              </div>
-              <p className="mb-1">Drop files to get started</p>
-              <p className="text-xs">JPEG/PNG images are recompressed in place. Other types are gzipped (.gz). Drag & drop files here or use the button</p>
-            </div>
-          )}
+          {items.length === 0 && <EmptyState />}
 
           {items.length > 0 && (
-            <div className="mb-4 overflow-hidden rounded border border-white/10">
-              <div className="grid grid-cols-12 gap-2 px-3 py-2 text-xs bg-white/5 text-white/70">
-                <div className="col-span-5">File</div>
-                <div className="col-span-2 text-right">Before</div>
-                <div className="col-span-2 text-right">After</div>
-                <div className="col-span-3 text-right">Action</div>
-              </div>
-              {items.map((entry) => (
-                <div key={entry.file.name} className="grid grid-cols-12 gap-2 px-3 py-2 text-sm items-center border-t border-white/5">
-                  <div className="col-span-5 truncate" title={entry.file.name}>{entry.file.name}</div>
-                  <div className="col-span-2 text-right">{(entry.beforeSize / 1024).toFixed(1)} KB</div>
-                  <div className="col-span-2 text-right">
-                    {entry.afterSize != null ? (
-                      <span>{(entry.afterSize / 1024).toFixed(1)} KB</span>
-                    ) : (
-                      <span className="opacity-60">—</span>
-                    )}
-                  </div>
-                  <div className="col-span-3 text-right">
-                    {entry.status === "ready" && (
-                      <span className="text-white/60">Ready</span>
-                    )}
-                    {entry.status === "compressing" && (
-                      <span className="inline-flex items-center gap-2">
-                        <span className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
-                        <span className="text-white/80">Compressing</span>
-                      </span>
-                    )}
-                    {entry.status === "done" && (
-                      <button
-                        type="button"
-                        className="px-3 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-xs"
-                        onClick={() => downloadOne(entry)}
-                      >
-                        Download
-                      </button>
-                    )}
-                    {entry.status === "error" && (
-                      <span className="text-red-400" title={entry.error}>Failed</span>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
+            <FileTable items={items} onDownload={downloadOne} />
           )}
 
           <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={onCompress}
-              className="px-4 py-2 rounded bg-green-600 hover:bg-green-500 disabled:opacity-50"
+              className="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-500 active:bg-green-500 focus:bg-green-500 focus:outline-none focus:ring-2 focus:ring-green-400 disabled:opacity-50"
               disabled={!items.length || busy}
             >
               {busy ? "Compressing..." : "Compress"}
@@ -290,7 +221,7 @@ export default function CompressorPage() {
             <button
               type="button"
               onClick={resetForRecompress}
-              className="px-4 py-2 rounded bg-white/10 hover:bg-white/20 disabled:opacity-50"
+              className="px-4 py-2 rounded bg-white/10 text-white hover:bg-white/20 active:bg-white/20 focus:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/30 disabled:opacity-50"
               disabled={!items.length || busy}
             >
               Compress again
@@ -298,7 +229,7 @@ export default function CompressorPage() {
             {allDone && (
               <button
                 type="button"
-                className="px-4 py-2 rounded bg-blue-600 hover:bg-blue-500"
+                className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-500 active:bg-blue-500 focus:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 onClick={() => items.forEach(downloadOne)}
               >
                 Download all
