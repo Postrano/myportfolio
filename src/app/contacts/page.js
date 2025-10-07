@@ -122,7 +122,7 @@ const templateParams = {
   return (
     <div
     className={`flex flex-col items-center justify-center h-screen relative overflow-hidden transition-colors duration-1000 ${
-      isDay ? "bg-blue-300" : "bg-gray-900"
+      isDay ? "bg-blue-300 text-gray-900" : "bg-gray-900 text-white"
     }`}
   >
       <p className="text-center text-xl font-bold mt-10"></p>
@@ -237,13 +237,13 @@ const templateParams = {
       <div className="flex justify-between mt-4">
         <button
           onClick={() => setIsOpen(false)}
-          className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-red-600"
+          className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-red-600 active:bg-red-600 focus:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400"
         >
           Cancel
         </button>
         <button
           onClick={handleSend}
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 "
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 active:bg-blue-700 focus:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
         >
           Send
         </button>

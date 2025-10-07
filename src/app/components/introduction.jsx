@@ -65,7 +65,7 @@ const Introduction = () => {
   return (
     <div
     className={`flex flex-col items-center justify-center h-screen relative overflow-hidden transition-colors duration-1000 ${
-      isDay ? "bg-blue-300" : "bg-gray-900"
+      isDay ? "bg-blue-300 text-[#191970]" : "bg-gray-900 text-white"
     }`}
   >
     <div 
@@ -104,7 +104,7 @@ const Introduction = () => {
 
       {/* Play/Pause Button */}
       <button 
-        className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-full transition duration-300 ease-in-out hover:bg-blue-600 hover:scale-105"
+        className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-full transition duration-300 ease-in-out hover:bg-blue-600 active:bg-blue-600 focus:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 hover:scale-105"
         onClick={() => {
           const audio = document.getElementById('audioPlayer');
           if (audio.paused) {
