@@ -9,7 +9,7 @@ export default function EmptyState() {
         <span className="text-xl">+</span>
       </div>
       <p className="mb-1">Drop files to get started</p>
-      <p className="text-xs">JPEG/PNG images are recompressed in place. Other types are gzipped (.gz). Drag & drop files here or use the button</p>
+      <p className="text-xs">JPEG/PNG images are recompressed in place. Other types are compressed to .compressed format. Drag & drop files here or use the button</p>
     </div>
   );
 }
