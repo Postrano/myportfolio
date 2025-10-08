@@ -93,16 +93,84 @@ export default function CompressorPage() {
     return blob || file;
   };
 
-  // Gzip compression for non-image files
-  const gzipFileStream = async (file) => {
+  // Compress non-image files using gzip and create a custom compressed format
+  const compressNonImageFile = async (file) => {
     if (typeof CompressionStream === "undefined") {
-      throw new Error("Gzip not supported by this browser");
+      // Fallback: return original file if compression not supported
+      return file;
     }
-    const compressedStream = file
-      .stream()
-      .pipeThrough(new CompressionStream("gzip"));
-    const blob = await new Response(compressedStream).blob();
-    return blob;
+    
+    try {
+      // Compress the file using gzip
+      const compressedStream = file.stream().pipeThrough(new CompressionStream("gzip"));
+      const compressedBlob = await new Response(compressedStream).blob();
+      
+      // Create a custom format that includes metadata and compressed data
+      const metadata = {
+        originalName: file.name,
+        originalSize: file.size,
+        compressedSize: compressedBlob.size,
+        timestamp: Date.now(),
+        format: 'compressed'
+      };
+      
+      // Convert metadata to JSON and create a data URL format
+      const metadataJson = JSON.stringify(metadata);
+      const metadataBlob = new Blob([metadataJson], { type: 'application/json' });
+      
+      // Create a combined blob with metadata and compressed data
+      const combinedBlob = new Blob([
+        new Uint8Array([0x43, 0x4F, 0x4D, 0x50]), // "COMP" magic bytes
+        new Uint8Array([metadataJson.length]), // metadata length
+        await metadataBlob.arrayBuffer(), // metadata
+        await compressedBlob.arrayBuffer() // compressed data
+      ], { type: 'application/octet-stream' });
+      
+      return combinedBlob;
+    } catch (error) {
+      console.error('Compression failed:', error);
+      return file; // Return original file if compression fails
+    }
+  };
+
+  // Decompress custom compressed files
+  const decompressFile = async (compressedBlob) => {
+    try {
+      const arrayBuffer = await compressedBlob.arrayBuffer();
+      const uint8Array = new Uint8Array(arrayBuffer);
+      
+      // Check magic bytes
+      if (uint8Array[0] !== 0x43 || uint8Array[1] !== 0x4F || uint8Array[2] !== 0x4D || uint8Array[3] !== 0x50) {
+        throw new Error('Invalid compressed file format');
+      }
+      
+      // Read metadata length
+      const metadataLength = uint8Array[4];
+      const metadataBytes = uint8Array.slice(5, 5 + metadataLength);
+      const metadataJson = new TextDecoder().decode(metadataBytes);
+      const metadata = JSON.parse(metadataJson);
+      
+      // Extract compressed data
+      const compressedData = uint8Array.slice(5 + metadataLength);
+      
+      // Decompress using DecompressionStream
+      if (typeof DecompressionStream === "undefined") {
+        throw new Error('Decompression not supported by this browser');
+      }
+      
+      const decompressedStream = new Response(compressedData).body
+        .pipeThrough(new DecompressionStream("gzip"));
+      const decompressedBlob = await new Response(decompressedStream).blob();
+      
+      return {
+        blob: decompressedBlob,
+        originalName: metadata.originalName,
+        originalSize: metadata.originalSize
+      };
+    } catch (error) {
+      console.error('Decompression failed:', error);
+      throw error;
+    }
   };
 
   // Drag and drop support
@@ -141,11 +209,11 @@ export default function CompressorPage() {
             entry.afterSize = out.size;
             entry.status = "done";
           } else {
-            // gzip non-image files to reduce size
-            const gz = await gzipFileStream(entry.file);
-            entry.outputBlob = gz;
-            entry.outputName = entry.file.name + ".gz";
-            entry.afterSize = gz.size;
+            // compress non-image files
+            const compressed = await compressNonImageFile(entry.file);
+            entry.outputBlob = compressed;
+            entry.outputName = entry.file.name + ".compressed"; // add extension to indicate it's compressed
+            entry.afterSize = compressed.size;
             entry.status = "done";
           }
         } catch (e) {
@@ -164,6 +232,17 @@ export default function CompressorPage() {
     downloadBlob(entry.outputBlob, entry.outputName);
   };
 
+  const decompressOne = async (entry) => {
+    if (!entry?.outputBlob) return;
+    try {
+      const result = await decompressFile(entry.outputBlob);
+      downloadBlob(result.blob, result.originalName);
+    } catch (error) {
+      console.error('Decompression failed:', error);
+      alert('Failed to decompress file: ' + error.message);
+    }
+  };
+
   const allDone = items.length > 0 && items.every((e) => e.status === "done");
 
   const resetForRecompress = () => {
@@ -175,14 +254,14 @@ export default function CompressorPage() {
       <Sidenav />
       <main className="px-6 md:px-10 py-16 max-w-3xl mx-auto">
         <h1 className="text-3xl md:text-4xl font-bold mb-2">File Compressor</h1>
-        <p className="text-white/80 mb-6">Images (JPEG/PNG) are recompressed in place. Other files are gzipped (.gz) for size reduction.</p>
+        <p className="text-white/80 mb-6">Images (JPEG/PNG) are recompressed in place. Other files are compressed with a custom format (.compressed).</p>
 
         <div className="mb-6 text-white/80 text-sm">
           <p className="mb-2">Supported types:</p>
           <ul className="list-disc pl-5 space-y-1">
             <li><span className="text-white">Images</span>: JPEG/PNG recompressed (original format kept)</li>
-            <li><span className="text-white">Documents</span>: PDF, DOC, DOCX, TXT, etc. are gzipped (.gz)</li>
-            <li><span className="text-white">Others</span>: Most file types can be gzipped</li>
+            <li><span className="text-white">Documents</span>: PDF, DOC, DOCX, TXT, etc. compressed to .compressed format</li>
+            <li><span className="text-white">Others</span>: All file types compressed to .compressed format</li>
           </ul>
         </div>
 
@@ -206,7 +285,7 @@ export default function CompressorPage() {
           {items.length === 0 && <EmptyState />}
 
           {items.length > 0 && (
-            <FileTable items={items} onDownload={downloadOne} />
+            <FileTable items={items} onDownload={downloadOne} onDecompress={decompressOne} />
           )}
 
           <div className="flex items-center gap-3">
@@ -239,7 +318,7 @@ export default function CompressorPage() {
         </div>
 
         <p className="text-xs text-white/60 mt-4">
-          Note: Only JPEG and PNG are recompressed in-browser. Other file types are not changed.
+          Note: JPEG/PNG are recompressed in-browser. Other files are compressed using gzip and saved as .compressed files. Use the "Extract" button to restore original files.
         </p>
       </main>
     </div>
